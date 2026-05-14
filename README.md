@@ -46,7 +46,7 @@ ReviewShield is an AI-powered web application designed to detect and analyze fak
 ## ⚙️ Installation & Setup
 
 ### 1. Clone the repository
-git clone https://github.com/Ssruvi/reviewshield.git
+git clone https://github.com/Ssruvi/fake-review-detector.git
 cd reviewshield
 
 ### 2. Install dependencies
