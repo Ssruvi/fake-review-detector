@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake Review Detector</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .fake { color: red; }
+        .genuine { color: green; }
+
+        .card {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🧠 Fake Review Detector</h1>
+
+    <textarea id="reviews" placeholder="Enter reviews (one per line)"></textarea>
+    <button onclick="analyze()">Analyze Reviews</button>
+
+    <h2 id="trust"></h2>
+    <div id="results"></div>
+</div>
+
+<script>
+async function analyze() {
+    let text = document.getElementById("reviews").value;
+    let reviews = text.split("\n").filter(r => r.trim() !== "");
+
+    let res = await fetch("http://127.0.0.1:5000/analyze", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({reviews})
+    });
+
+    let data = await res.json();
+
+    document.getElementById("trust").innerText =
+        "Trust Score: " + data.trust_score + "%";
+
+    let output = "";
+    data.results.forEach(r => {
+        output += `<div class="card ${r.prediction === 'Fake' ? 'fake' : 'genuine'}">
+        <b>${r.prediction}</b> (${r.confidence}%): ${r.review} <br>
+        <small>Reasons: ${r.reasons.join(", ")}</small><br>
+        <small>Sentiment: ${r.sentiment}</small>
+        </div>`;
+    });
+
+    document.getElementById("results").innerHTML = output;
+}
+</script>
+
+</body>
+</html>
